@@ -7,16 +7,17 @@ namespace fcopyUtil
 {
     class Program
     {
+        static Program program = new Program();
         List<string> directories = new List<string>();
         List<string> files = new List<string>();
+        List<int> copyIndexes = new List<int>();
         int pointer = 0;
         static void Main(string[] args)
         {
             string tst = @"C:\Users\Herman\Desktop\test";
-            Program program = new Program();
             program.DirectoryLook(tst);
             program.FilesInDirectories();
-
+            program.FindCopyByHash();
             Console.WriteLine();
         }
 
@@ -49,12 +50,19 @@ namespace fcopyUtil
         }
         void FindCopyByHash()
         {
-            bool finded = false;
             for(int i = 0; i < files.Count; i++)
             {
-                for(int j = i + 1; j < files.Count; j++)
+                string hash1 = program.Hash(files[i]);
+                for (int j = 0; j < files.Count; j++)
                 {
-                    
+                    //Не проверяем файл с самим собой
+                    if (j == i) continue;
+                    string hash2 = program.Hash(files[j]);
+                    //Если хеши совпали, то это копии
+                    if (hash1 == hash2)
+                    {
+                        Console.WriteLine("Найдены копии:\r\nФайл {0}\r\nФайл {1}\r\n", files[i], files[j]);
+                    }
                 }
             }
         }
