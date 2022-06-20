@@ -14,11 +14,10 @@ namespace fcopyUtil
         int pointer = 0;
         static void Main(string[] args)
         {
-            string tst = @"C:\Users\Herman\Desktop\test";
-            program.DirectoryLook(tst);
+            program.DirectoryLook(args[0]);
             program.FilesInDirectories();
             program.FindCopyByHash();
-            Console.WriteLine();
+            Console.WriteLine("Готово!");
         }
 
         void DirectoryLook(string path)
@@ -47,9 +46,11 @@ namespace fcopyUtil
                 string[] tmp = Directory.GetFiles(pth);
                 foreach (string file in tmp) files.Add(file);
             }
+            pointer = 0;
         }
         void FindCopyByHash()
         {
+            bool find = false;
             for(int i = 0; i < files.Count; i++)
             {
                 string hash1 = program.Hash(files[i]);
@@ -59,10 +60,24 @@ namespace fcopyUtil
                     if (j == i) continue;
                     string hash2 = program.Hash(files[j]);
                     //Если хеши совпали, то это копии
-                    if (hash1 == hash2)
+                    if (hash1 == hash2 && !copyIndexes.Contains(j))
                     {
-                        Console.WriteLine("Найдены копии:\r\nФайл {0}\r\nФайл {1}\r\n", files[i], files[j]);
+                        copyIndexes.Add(j);
+                        find = true;
                     }
+                }
+                if (find)
+                {
+                    //Выводим найденные копии
+                    Console.WriteLine("Исходный файл {0}", files[i]);
+                    for(int index = pointer; index < copyIndexes.Count; index++)
+                    {
+                        Console.WriteLine("\t\tФайл копия {0}", files[copyIndexes[index]]);
+                    }
+                    Console.WriteLine();
+                    copyIndexes.Add(i);
+                    pointer = copyIndexes.Count;
+                    find = false;
                 }
             }
         }
