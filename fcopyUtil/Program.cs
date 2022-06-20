@@ -84,11 +84,14 @@ namespace fcopyUtil
         string Hash(string path)
         {
             string hash = "non";
-            //Байты файла
-            byte[] fileBytes = File.ReadAllBytes(path);
             SHA256 hashSHA256 = SHA256.Create();
-            //Байты хеша SHA256
-            byte[] hashBytes = hashSHA256.ComputeHash(fileBytes);
+            byte[] hashBytes;
+            //Байты файла
+            using (FileStream stream = File.OpenRead(path))
+            {
+                //Байты хеша SHA256
+                hashBytes = hashSHA256.ComputeHash(stream);
+            }
             if (hashBytes != null) hash = "";
             //Байты хеша SHA256 в строковом виде
             foreach (byte bt in hashBytes)
